@@ -1,4 +1,4 @@
-const { grade } = require('lib.js');
+const { grade } = require('./lib.js');
 
 const submission = process.argv[2];
 
