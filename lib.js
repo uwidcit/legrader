@@ -1,16 +1,14 @@
 const fs = require("fs").promises;
 const exists = require('fs').existsSync;
-const extra = require('fs-extra');
+const { createReadStream } = require('fs');
+const csv = require('csv-parser');
 const {spawn} = require('child_process');
 const {timeout, TimeoutError } = require('promise-timeout');
-
-const DEBUG = true;
-
-const GRADER = '/mnt/c/Users/snick/Desktop/DCIT/INFO 2602/A2Marker/';
-
+const path = require('path');
 
 //gets name of student based on myelearning submission folder name
 function getName(dirname){
+    dirname = dirname.replace('sample', '').replace('submissions', '').replace('/', '').replace('\\', '');
     const [firstname, ...lastname] = dirname.split('_')[0].split(' ');
     return {firstname, lastname: lastname.join(' ')};
 }
@@ -38,7 +36,21 @@ async function getStudentPartial(){
     }
 }
 
-const getStudent = getStudentPartial();
+
+function readCSV(path){
+    return new Promise((resolve)=>{
+      const results = [];
+  
+      createReadStream(path)
+        .pipe(csv())
+        .on('data', (data) => results.push(data))
+        .on('end', () => {
+          resolve(results);
+        });
+  
+    });
+}
+
 
 function initDB(){
     const init = spawn('python3', [path.join(__dirname, `/workspace/initDB.py`)]);
@@ -65,17 +77,17 @@ function startServer(){
         console.log(data.toString());
     });
 
-    return new Promise((resolve, reject)=>{
-        setTimeout(_=>{
-            resolve({
-                stop : () => {
-                    server.kill('SIGINT');
-                    console.log('\tStopping Server'); 
-                }
-            });
+    // return new Promise((resolve, reject)=>{
+    //     setTimeout(_=>{
+    //         resolve({
+    //             stop : () => {
+    //                 server.kill('SIGINT');
+    //                 console.log('\tStopping Server'); 
+    //             }
+    //         });
 
-        }, 2000)
-    });
+    //     }, 2000)
+    // });
    
 
 }
@@ -129,9 +141,11 @@ async function moveToWorkspace(dir){
 
 async function grade(directory){
 
-    const { ID } = getStudent(directory);
+    const getStudent = await getStudentPartial();
 
-    console.log('**************** Running: '+ID+' **********************');
+    const student = getStudent(directory);
+
+    console.log(`**************** Running: ${student['First name']} ${student['Surname']} ${student['ID number']} **********************`);
 
     let server;
 
@@ -148,8 +162,7 @@ async function grade(directory){
  
     }catch(e){
         console.log('\tError', e);
-        if(e instanceof TimeoutError)
-            console.log('\tServer Timed out')
+        if(e instanceof TimeoutError) console.log('\tServer Timed out')
     }finally{
         if(server)server.stop();
         return grade;

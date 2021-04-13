@@ -3,12 +3,12 @@
 ## To run on sample submission execute
 
 ```bash
-    node index.js sample\"john hopkins"
+    node index.js sample\"john hopkins_1234_assignment"
 ```
 
 ## To run on real submission
 
-Ensure that submission folder contains no subfolders and the following files:
+Ensure that submission folder contains no sub folders and the following files:
 
 1. main.py
 2. initDB.py

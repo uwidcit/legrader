@@ -2,7 +2,7 @@ const { grade } = require('./lib.js');
 
 const submission = process.argv[2];
 
-if(!assignment){
+if(!submission){
     console.log('No assignment passed')
 }else{
     grade(submission)
