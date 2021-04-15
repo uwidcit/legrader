@@ -60,9 +60,7 @@ function initDB(){
             // dataToSend = data.toString();
         });
 
-        // init.stderr.on('data', (data) => {
-        //     console.error(`stderr: ${data}`);
-        // });
+        init.stderr.on('data', console.log);
         init.on('close', code => {
             resolve(code);
         })
@@ -76,6 +74,8 @@ function startServer(){
     server.stdout.on('data', function (data) {
         console.log(data.toString());
     });
+
+    init.stderr.on('data', console.log);
 
     // return new Promise((resolve, reject)=>{
     //     setTimeout(_=>{
@@ -98,8 +98,9 @@ async function clearWorkspace(){
     const question3 = path.join(__dirname, `/workspace/static/app.html`);
     const question4 = path.join(__dirname, `/workspace/templates/app.html`);
     const testdb = path.join(__dirname, `/workspace/test.db`);
+    const models = path.join(__dirname, `/workspace/models.py`);
 
-    const files = [main, initDB, question3, question4, testdb];
+    const files = [main, initDB, question3, question4, testdb, models];
 
     const promises = files.map( file=>{
         if(exists(file))
@@ -116,7 +117,7 @@ async function moveToWorkspace(dir){
  
     await fs.copyFile(path.join(dir, '/main.py'), path.join(__dirname, `/workspace/main.py`));
     await fs.copyFile(path.join(dir, '/initDB.py'), path.join(__dirname, `/workspace/initDB.py`));
-
+    await fs.copyFile(path.join(dir, '/models.py'), path.join(__dirname, `/workspace/models.py`));
 
     const question3 = path.join(dir, '/question3.html');
     const question4 = path.join(dir, '/question4.html')
@@ -126,13 +127,13 @@ async function moveToWorkspace(dir){
     const templates = path.join(__dirname, `/workspace/templates/app.html`);
 
     if(exists(question3) && exists(question4)){
-        await fs.rename(question3, templates);
-        await fs.rename(question4, static);
+        await fs.copyFile(question3, templates);
+        await fs.copyFile(question4, static);
     }else if (exists(question3) ){
-        await fs.rename(question3, templates);
+        await fs.copyFile(question3, templates);
         await fs.copyFile(dummy4, static);
     }else if(exists(question4)){
-        await fs.rename(question4, static);
+        await fs.copyFile(question4, static);
         await fs.copyFile(dummy3, templates);
     }
 
