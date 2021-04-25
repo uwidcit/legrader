@@ -1,11 +1,14 @@
+import json
 from flask_cors import CORS
 from flask import Flask, request, render_template, redirect, flash, url_for, jsonify
 from sqlalchemy.exc import IntegrityError
 from datetime import timedelta 
 
-from models import db, Laptop #add application models
+from models import db, Comment, Movie #add application models
 
 ''' Begin boilerplate code '''
+
+
 def create_app():
   app = Flask(__name__, static_url_path='')
   app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
@@ -18,56 +21,68 @@ def create_app():
 app = create_app()
 
 app.app_context().push()
+
 ''' End Boilerplate Code '''
 
-##### Question 2 Laptop Filter Function #####
-
-def laptop_filter(laptops, brand='Any', display_size='Any', graphics_brand='Any', processor_brand='Any', price_range=13000):
-
-  if price_range:
-    laptops = list(filter(lambda laptop: int(laptop.price) < int(price_range), laptops))
-
-  #add filters for brand, graphics, processor and display
-
-  return laptops
-
-############### Question 3 Routes ##########
-
+################# Question 2 ##################
 @app.route('/')
 def index():
-  # get brand, display_size etc from query params
-  # laptops = laptop_filter(laptops, brand, display_size, graphics_brand, processor_brand, price_range)
-  return render_template('app.html')
 
-@app.route('/deleteLaptop/<id>', methods=['GET'])
-def delete_action(id):
-  return 'delete action'
+    return render_template('app.html', movie=None)
 
-@app.route('/insertLaptop', methods=['POST'])
-def insert_action():
-  return 'insert action'
+@app.route('/movies/<id>')
+def show_movie(id):
+    # get all movies, the movie specified by id & its comments and pass all to the template
+    movie = Movie.query.all()
+    movies = [movie.toDict() for movie in Movie]
 
-############### Question 4 Routes ###########
+    com = Comment.query.all()
+    comm = [com.toDict() for com in Comment]
+    return render_template('app.html', movie=None)    
+
+@app.route('/comments', methods=['POST'])
+def create_comment_action():
+    c = request.form
+    comment = Comment(movie_id = c['movie_id'])
+    db.session.add(comment)
+    db.session.commit()
+    return redirect(request.referrer) # redirect to previous page
+
+@app.route('/deleteComment/<id>', methods=['GET'])
+def delete_comment_action(id):
+    comment = Comment.query.get(id)
+    db.session.delete(comment)
+    db.session.commit()
+    return redirect(request.referrer)
+
+################ Question 3 #####################
 
 @app.route('/app')
 def client_app():
   return app.send_static_file('app.html')
 
-@app.route('/api/laptops', methods=['GET'])
-def get_laptops():
-  # get brand, display_size etc from query params
-  # laptops = laptop_filter(laptops, brand, display_size, graphics_brand, processor_brand, price_range)
-  return 'read data'
+@app.route('/api/movies', methods=['GET'])
+def get_movies():
+  return 'result'
 
-@app.route('/api/laptops', methods=['POST'])
-def create_laptop():
-  return 'create data'
+@app.route('/api/movies/<id>', methods=['GET'])
+def get_movie(id):
+  return 'result'
 
-@app.route('/api/delete/<id>', methods=['DELETE'])
-def delete_laptops(id):
-  return 'delete data'
+@app.route('/api/comments', methods=["POST"])
+def create_comment():
+    return 'result'
 
-#############################################
+#get comments by movie id
+@app.route('/api/movies/<id>/comments', methods=["GET"])
+def get_movie_comments(id): 
+    return 'result'
+
+# get comment by comment id
+@app.route('/api/comments/<id>', methods=["DELETE"])
+def delete_comment(id): 
+    return 'result'
+
 
 
 if __name__ == '__main__':

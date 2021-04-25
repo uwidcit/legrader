@@ -8,7 +8,7 @@ const path = require('path');
 
 //gets name of student based on myelearning submission folder name
 function getName(dirname){
-    dirname = dirname.replace('sample', '').replace('submissions', '').replace('/', '').replace('\\', '');
+    dirname = dirname.replace('sample', '').replace('stream1\\', '').replace('stream2\\', '').replace('submissions', '').replace('/', '').replace('\\', '');
     const [firstname, ...lastname] = dirname.split('_')[0].split(' ');
     return {firstname, lastname: lastname.join(' ')};
 }
@@ -25,8 +25,8 @@ async function loadStudents(participantFile='participants.csv'){
 
 // partial function which returns a getStudent() function,
 // get student function returns a student object from a submission directory name
-async function getStudentPartial(){
-    const students = await loadStudents();
+async function getStudentPartial(participantFile){
+    const students = await loadStudents(participantFile);
 
     return function(dirname){
         const {firstname, lastname} = getName(dirname);
@@ -53,14 +53,14 @@ function readCSV(path){
 
 
 function initDB(){
-    const init = spawn('python3', [path.join(__dirname, `/workspace/initDB.py`)]);
+    const init = spawn('python', [path.join(__dirname, `/workspace/initDB.py`)]);
     return new Promise((resolve, reject) => {
         init.stdout.on('data', function (data) {
             console.log(data.toString());
             // dataToSend = data.toString();
         });
 
-        init.stderr.on('data', console.log);
+        init.stderr.on('data', data=>console.log(data.toString()));
         init.on('close', code => {
             resolve(code);
         })
@@ -69,13 +69,13 @@ function initDB(){
 }
 
 function startServer(){
-    const server = spawn('python3', [path.join(__dirname, `/workspace/main.py`)]);
+    const server = spawn('python', [path.join(__dirname, `/workspace/main.py`)]);
 
     server.stdout.on('data', function (data) {
         console.log(data.toString());
     });
 
-    init.stderr.on('data', console.log);
+    server.stderr.on('data', data=>console.log(data.toString()));
 
     // return new Promise((resolve, reject)=>{
     //     setTimeout(_=>{
@@ -119,30 +119,30 @@ async function moveToWorkspace(dir){
     await fs.copyFile(path.join(dir, '/initDB.py'), path.join(__dirname, `/workspace/initDB.py`));
     await fs.copyFile(path.join(dir, '/models.py'), path.join(__dirname, `/workspace/models.py`));
 
-    const question3 = path.join(dir, '/question3.html');
-    const question4 = path.join(dir, '/question4.html')
+    const question2 = path.join(dir, '/question2.html');
+    const question3 = path.join(dir, '/question3.html')
+    const dummy2 = path.join(__dirname, `/dummy/question2.html`);
     const dummy3 = path.join(__dirname, `/dummy/question3.html`);
-    const dummy4 = path.join(__dirname, `/dummy/question4.html`);
     const static = path.join(__dirname, `/workspace/static/app.html`);
     const templates = path.join(__dirname, `/workspace/templates/app.html`);
 
-    if(exists(question3) && exists(question4)){
-        await fs.copyFile(question3, templates);
-        await fs.copyFile(question4, static);
-    }else if (exists(question3) ){
-        await fs.copyFile(question3, templates);
-        await fs.copyFile(dummy4, static);
-    }else if(exists(question4)){
-        await fs.copyFile(question4, static);
-        await fs.copyFile(dummy3, templates);
+    if(exists(question2) && exists(question3)){
+        await fs.copyFile(question2, templates);
+        await fs.copyFile(question3, static);
+    }else if (exists(question2) ){
+        await fs.copyFile(question2, templates);
+        await fs.copyFile(dummy3, static);
+    }else if(exists(question2)){
+        await fs.copyFile(question3, static);
+        await fs.copyFile(dummy2, templates);
     }
 
 }
 
 
-async function grade(directory){
+async function grade(directory, participantFile){
 
-    const getStudent = await getStudentPartial();
+    const getStudent = await getStudentPartial(participantFile);
 
     const student = getStudent(directory);
 

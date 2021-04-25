@@ -1,252 +1,108 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Laptop Place</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-        <style>
-
-        html{
-            height: 100vh;
-            width: 100vw;
-        }
-
-        *{
-            box-sizing: border-box;
-        }
-
-        body{
-            height: 100%;
-            width: 100%;
-        } 
-
-        main{
-            padding-left: 300px;
-        }
-            
-        @media only screen and (max-width : 992px) {
-            main {
-                padding-left: 0;
-            }
-        }
-
-        h1{
-            font-size: 2em;
-        }
-
-        fieldset{
-            display: flex;
-            flex-direction: column;
-        }
-
-        </style>
-    </head>
-    <body>
-        
-        <nav>
-            <div class="nav-wrapper green">
-                <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i> Filter</a>
-            </div>
+{% extends "layout.html" %}
+{% block title %}Movies App{% endblock %}
+{% block page %}
+    <ul id="slide-out"  class="sidenav sidenav-fixed">
+        <nav class="purple">
+            <div class="nav-wrapper"></div>
         </nav>
 
-        <ul id="slide-out" class="sidenav sidenav-fixed">
-            <nav>
-                <div class="nav-wrapper green">
-                    <a href="#" style="margin-left: 10px" class="brand-logo green left">Laptop Place</a>
-                </div>
-            </nav>
-            <section class="container">
+        <div id="movieList" class="collection">
+            <a href="/movies/1" class="collection-item">Movie Title</a>
+        </div>
 
-                <form id="filter" onsubmit="filter(event)">
-                    <h1>Filter</h1>
+    </ul>
+{% endblock %}
 
-                    
-                    <div class="input-field col s12">
-                        <select name="brand">
-                            <option selected>Any</option>
-                            <option>HP</option>
-                            <option>Lenovo</option>
-                            <option>Huawei</option>
-                            <option>Dell</option>
-                            <option>Asus</option>
-                            <option>Apple</option>
-                            <option>Acer</option>
-                            <option>Microsoft</option>
-                            <option>Any</option>
-                        </select>
-                        <label>Brand</label>
+{{ super() }}
+
+{% block content %}
+
+<style>
+    aside{
+        overflow-y: scroll;
+    }
+
+    body {
+      padding-left: 300px;
+    }
+
+    @media only screen and (max-width : 992px) {
+      body {
+        padding-left: 0;
+      }
+    }
+         
+</style>
+
+    <main class="col">
+        {% if movie == None %}
+            <div class="row">
+                <h1>Select A Movie</h1>
+            </div>
+        {% else %}
+            <!-- Movie Detail Here -->
+              <div class="row">
+                <h1>Movie Title</h1>
+            </div>
+
+            <div class="row">
+                      <div class="col">
+                          <img src="https://resizing.flixster.com/gxRJwetP1eNIrPR6xlWBfD_VaFc=/180x267/dkpu1ddg7pbsk.cloudfront.net/movie/11/17/72/11177246_ori.jpg">
+                      </div>
+                      <div class="col">
+                          <p> Release Date : 04-Apr-14</p>
+                          <p> Studio : Marvel Studios</p>
+                          <p> Gross : $714,766,572.00 </p>
+                          <p> Rating : PG-13</p>
+                      </div>
+            </div>
+
+            <div class="row">
+                <h1>Comments</h1>
+                  
+
+                    <li class="collection-item">
+                          Username: Comment
+                          <a href="/deleteComment/29" class="secondary-content">
+                                <i class="material-icons">delete</i>
+                          </a>
+                    </li>
+
+
+                <form class="col s12" action="/comments" method="POST">
+                    <div class="row">
+                        <input value="{{movie.id}}" name="movie_id" type="hidden">
+                        <div class="input-field col s12">
+                            <input placeholder="Placeholder" value="Bob" name="username" type="text" class="validate">
+                            <label for="first_name">Username</label>
+                        </div>
+                        <div class="input-field col s12">
+                            <textarea name="text" class="materialize-textarea"></textarea>
+                            <label for="textarea1">Text</label>
+                        </div>
+                        <div class="input-field col s12">
+                            <button class="btn waves-effect waves-light right purple" type="submit">
+                                Submit
+                            </button>
+                        </div>
                     </div>
-
-                    <div class="input-field col s12">
-                        <select name="graphics_brand">
-                            <option selected>Any</option>
-                            <option>Intel</option>
-                            <option>Nvidia</option>
-                            <option>AMD</option>
-                        </select>
-                        <label>GPU Brand</label>
-                    </div>
-
-                    <div class="input-field col s12">
-                        <select name="processor_brand">
-                            <option selected>Any</option>
-                            <option>Intel</option>
-                            <option>AMD</option>
-                        </select>
-                        <label>CPU Brand</label>
-                    </div>
-
-                    <div class="input-field col s12">
-                        <select name="display_size">
-                            <option selected>Any</option>
-                            <option>13</option>
-                            <option>14</option>
-                            <option>15</option>
-                        </select>
-                        <label>Screen Size</label>
-                    </div>
-
-                    <label for="price_range">Price Range $USD</label>
-                    <input type="range" oninput="price_output.value=this.value" value="500" step="100" id="price_range" name="price_range" min="500" max="13000" />
-                    <output id="price_output" value="price_range.value" for="price_range">500</output>
-                
-                    <div class="input-field">
-                        <button class="btn waves-effect waves-light" type="submit">
-                            Submit
-                        </button>
-                    </div>
-
                 </form>
 
-                <form id="insert" onsubmit="create(event)">
+                <ul id="commentList" class="collection with-header">
+                   
+                </ul>
+            </div>
+        {% endif %}
+       
+     
+    </main>
 
-                    <h1>Create</h1>
-
-                    <div class="input-field col s12">
-                        <input placeholder="cpu name" name="name" type="text" class="validate">
-                        <label for="name">Name</label>
-                    </div>
-
-                    <div class="input-field col s12">
-                      <select name="brand">
-                          <option>HP</option>
-                          <option>Lenovo</option>
-                          <option>Huawei</option>
-                          <option>Dell</option>
-                          <option>Asus</option>
-                          <option>Apple</option>
-                          <option>Acer</option>
-                          <option>Microsoft</option>
-                      </select>
-                      <label>Brand</label>
-                  </div>
-                
-                    <div class="input-field col s12">
-                        <select name="graphics_brand">
-                            <option>Intel</option>
-                            <option>Nvidia</option>
-                            <option>AMD</option>
-                        </select>
-                        <label>GPU Brand</label>
-                    </div>
-
-                    <div class="input-field col s12">
-                        <select name="processor_brand">
-                            <option>Intel</option>
-                            <option>AMD</option>
-                        </select>
-                        <label>CPU Brand</label>
-                    </div>
-
-                    <div class="input-field col s12">
-                        <select name="display_size">
-                            <option>13</option>
-                            <option>14</option>
-                            <option>15</option>
-                        </select>
-                        <label>Screen Size</label>
-                    </div>
-
-                    <div class="input-field col s12">
-                        <input placeholder="price" name="price" type="number" class="validate">
-                        <label for="price">Price</label>
-                    </div>
-            
-                    <div class="input-field">
-                        <button class="btn waves-effect waves-light" type="submit">
-                            Submit
-                        </button>
-                    </div>
-
-                </form>
-            </section>
-        </ul>
-
-        <main class="row">
-            <article class="col s12">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Brand</th>
-                        <th>GPU Brand</th>
-                        <th>CPU Brand</th>
-                        <th>Screen Size</th>
-                        <th>Price</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
-            
-                    <tbody id="result">
-
-                    </tbody>
-                </table>
-            </article>
-        </main>
+    <script>
         
-        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.sidenav');
+            var instances = M.Sidenav.init(elems);
+        });
 
-            document.addEventListener('DOMContentLoaded', function() {
-                M.FormSelect.init(document.querySelectorAll('select'));
-                M.Sidenav.init(document.querySelectorAll('.sidenav'));
-            });
-
-            async function sendRequest(url, method, data){
-                const options = {method};
-                if(data){
-                    options.body = JSON.stringify(data);
-                    options.headers = {'Content-Type':'application/json'};
-                }
-                let response = await fetch(url, options);
-                return response.json();
-            }
-
-            function drawTable(records){
-              
-            }
-
-            async function create(event){
-  
-            }
-
-            async function filter(event){
-
-            }
-
-            async function deleteLaptop(id){
-
-            }
-
-            async function loadView(){
-
-            }
-            
-            loadView();
-
-        </script>
-    </body>
-</html>
+    </script>
+{% endblock %}

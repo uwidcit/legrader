@@ -5,5 +5,5 @@ const submission = process.argv[2];
 if(!submission){
     console.log('No assignment passed')
 }else{
-    grade(submission)
+    grade(submission, './participants.csv');
 }
