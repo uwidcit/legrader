@@ -1,6 +1,8 @@
 import json
 from flask_cors import CORS
+from flask_login import LoginManager, current_user, login_user, login_required
 from flask import Flask, request, render_template, redirect, flash, url_for, jsonify
+from flask_jwt import JWT, jwt_required, current_identity
 from sqlalchemy.exc import IntegrityError
 from datetime import timedelta 
 
@@ -27,26 +29,23 @@ app.app_context().push()
 ################# Question 2 ##################
 @app.route('/')
 def index():
-
-    return render_template('app.html', movie=None)
+    movies = Movie.query.all()
+    return render_template('app.html', movie=None, movies=movies)
 
 @app.route('/movies/<id>')
 def show_movie(id):
-    # get all movies, the movie specified by id & its comments and pass all to the template
-    movie = Movie.query.all()
-    movies = [movie.toDict() for movie in Movie]
-
-    com = Comment.query.all()
-    comm = [com.toDict() for com in Comment]
-    return render_template('app.html', movie=None)    
+    movies = Movie.query.all()
+    movie = Movie.query.get(id)
+    comments = Comment.query.filter_by(movie_id=id)
+    return render_template('app.html', movie=movie, movies=movies, comments=comments)    
 
 @app.route('/comments', methods=['POST'])
 def create_comment_action():
-    c = request.form
-    comment = Comment(movie_id = c['movie_id'])
+    data = request.form
+    comment = Comment(username=data['username'], text=data['text'], movie_id=data['movie_id'])
     db.session.add(comment)
     db.session.commit()
-    return redirect(request.referrer) # redirect to previous page
+    return redirect('/movies/'+data['movie_id'])
 
 @app.route('/deleteComment/<id>', methods=['GET'])
 def delete_comment_action(id):
@@ -63,25 +62,35 @@ def client_app():
 
 @app.route('/api/movies', methods=['GET'])
 def get_movies():
-  return 'result'
+  movies = Movie.query.all()
+  movies = [ movie.toDict() for movie in movies ]
+  return jsonify(movies)
 
 @app.route('/api/movies/<id>', methods=['GET'])
 def get_movie(id):
-  return 'result'
+  movie = Movie.query.get(id)
+  return jsonify(movie.toDict())
 
 @app.route('/api/comments', methods=["POST"])
 def create_comment():
-    return 'result'
+    data = request.json
+    comment = Comment(username=data['username'], text=data['text'], movie_id=data['movie_id'])
+    db.session.add(comment)
+    db.session.commit()
+    return jsonify({"message":"created"}), 201
 
-#get comments by movie id
 @app.route('/api/movies/<id>/comments', methods=["GET"])
 def get_movie_comments(id): 
-    return 'result'
+    comments = Comment.query.filter_by(movie_id=id)
+    comments = [ comment.toDict() for comment in comments ]
+    return jsonify(comments)
 
-# get comment by comment id
 @app.route('/api/comments/<id>', methods=["DELETE"])
 def delete_comment(id): 
-    return 'result'
+    comment = Comment.query.get(id)
+    db.session.delete(comment)
+    db.session.commit()
+    return jsonify({"message":"deleted"}), 200
 
 
 

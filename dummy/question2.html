@@ -7,9 +7,7 @@
         </nav>
 
         <div id="movieList" class="collection">
-            {% for movie in movies %}
-                <a href="/movies/{{movie.id}}" class="collection-item">{{movie.title}}</a>
-            {% endfor %}
+      
         </div>
 
     </ul>
@@ -42,21 +40,7 @@
                 <h1>Select A Movie</h1>
             </div>
         {% else %}
-            <div class="row">
-                <h1>{{movie.title}}</h1>
-            </div>
-
-            <div class="row">
-                <div class="col">
-                    <img src="{{movie.poster_url}}">
-                </div>
-                <div class="col">
-                    <p> Release Date : {{ movie.release_date }}</p>
-                    <p> Studio : {{ movie.studio }} </p>
-                    <p> Gross : {{ movie.gross }} </p>
-                    <p> Rating : {{ movie.rating }} </p>
-                </div>
-            </div>
+            <!-- Movie Detail Here -->
 
             <div class="row">
                 <h1>Comments</h1>
@@ -81,12 +65,7 @@
                 </form>
 
                 <ul id="commentList" class="collection with-header">
-                    {% for comment in comments %}
-                        <li class="collection-item">
-                            {{comment.username}}: {{comment.text}}
-                            <a href="/deleteComment/{{comment.id}}" class="secondary-content"><i class="material-icons">delete</i></a>
-                        </li>
-                    {% endfor %}
+                   
                 </ul>
             </div>
         {% endif %}
@@ -102,4 +81,4 @@
         });
 
     </script>
-{% endblock %}s
+{% endblock %}
