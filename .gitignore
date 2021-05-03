@@ -2,4 +2,4 @@ submissions
 participants.csv
 util.js
 node_modules/
-workspace/
+workspace/*

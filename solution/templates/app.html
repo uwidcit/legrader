@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+{% block title %}Movies App{% endblock %}
+{% block page %}
+    <ul id="slide-out"  class="sidenav sidenav-fixed">
+        <nav class="purple">
+            <div class="nav-wrapper"></div>
+        </nav>
+
+        <div id="movieList" class="collection">
+            {% for movie in movies %}
+                <a href="/movies/{{movie.id}}" class="collection-item">{{movie.title}}</a>
+            {% endfor %}
+        </div>
+
+    </ul>
+{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+
+<style>
+    aside{
+        overflow-y: scroll;
+    }
+
+    body {
+      padding-left: 300px;
+    }
+
+    @media only screen and (max-width : 992px) {
+      body {
+        padding-left: 0;
+      }
+    }
+         
+</style>
+
+    <main class="col">
+        {% if movie == None %}
+            <div class="row">
+                <h1>Select A Movie</h1>
+            </div>
+        {% else %}
+            <div class="row">
+                <h1>{{movie.title}}</h1>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <img src="{{movie.poster_url}}">
+                </div>
+                <div class="col">
+                    <p> Release Date : {{ movie.release_date }}</p>
+                    <p> Studio : {{ movie.studio }} </p>
+                    <p> Gross : {{ movie.gross }} </p>
+                    <p> Rating : {{ movie.rating }} </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <h1>Comments</h1>
+
+                <form class="col s12" action="/comments" method="POST">
+                    <div class="row">
+                        <input value="{{movie.id}}" name="movie_id" type="hidden">
+                        <div class="input-field col s12">
+                            <input placeholder="Placeholder" value="Bob" name="username" type="text" class="validate">
+                            <label for="first_name">Username</label>
+                        </div>
+                        <div class="input-field col s12">
+                            <textarea name="text" class="materialize-textarea"></textarea>
+                            <label for="textarea1">Text</label>
+                        </div>
+                        <div class="input-field col s12">
+                            <button class="btn waves-effect waves-light right purple" type="submit">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <ul id="commentList" class="collection with-header">
+                    {% for comment in comments %}
+                        <li class="collection-item">
+                            {{comment.username}}: {{comment.text}}
+                            <a href="/deleteComment/{{comment.id}}" class="secondary-content"><i class="material-icons">delete</i></a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+       
+     
+    </main>
+
+    <script>
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.sidenav');
+            var instances = M.Sidenav.init(elems);
+        });
+
+    </script>
+{% endblock %}s
