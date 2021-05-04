@@ -7,9 +7,7 @@
         </nav>
 
         <div id="movieList" class="collection">
-            {% for movie in movies %}
-                <a href="/movies/{{movie.id}}" class="collection-item">{{movie.title}}</a>
-            {% endfor %}
+            <a href="/movies/1" class="collection-item">Movie Title</a>
         </div>
 
     </ul>
@@ -42,24 +40,34 @@
                 <h1>Select A Movie</h1>
             </div>
         {% else %}
-            <div class="row">
-                <h1>{{movie.title}}</h1>
+            <!-- Movie Detail Here -->
+              <div class="row">
+                <h1>Movie Title</h1>
             </div>
 
             <div class="row">
-                <div class="col">
-                    <img src="{{movie.poster_url}}">
-                </div>
-                <div class="col">
-                    <p> Release Date : {{ movie.release_date }}</p>
-                    <p> Studio : {{ movie.studio }} </p>
-                    <p> Gross : {{ movie.gross }} </p>
-                    <p> Rating : {{ movie.rating }} </p>
-                </div>
+                      <div class="col">
+                          <img src="https://resizing.flixster.com/gxRJwetP1eNIrPR6xlWBfD_VaFc=/180x267/dkpu1ddg7pbsk.cloudfront.net/movie/11/17/72/11177246_ori.jpg">
+                      </div>
+                      <div class="col">
+                          <p> Release Date : 04-Apr-14</p>
+                          <p> Studio : Marvel Studios</p>
+                          <p> Gross : $714,766,572.00 </p>
+                          <p> Rating : PG-13</p>
+                      </div>
             </div>
 
             <div class="row">
                 <h1>Comments</h1>
+                  
+
+                    <li class="collection-item">
+                          Username: Comment
+                          <a href="/deleteComment/29" class="secondary-content">
+                                <i class="material-icons">delete</i>
+                          </a>
+                    </li>
+
 
                 <form class="col s12" action="/comments" method="POST">
                     <div class="row">
@@ -81,12 +89,7 @@
                 </form>
 
                 <ul id="commentList" class="collection with-header">
-                    {% for comment in comments %}
-                        <li class="collection-item">
-                            {{comment.username}}: {{comment.text}}
-                            <a href="/deleteComment/{{comment.id}}" class="secondary-content"><i class="material-icons">delete</i></a>
-                        </li>
-                    {% endfor %}
+                   
                 </ul>
             </div>
         {% endif %}
@@ -102,4 +105,4 @@
         });
 
     </script>
-{% endblock %}s
+{% endblock %}

@@ -6,7 +6,8 @@
   "scripts": {
     "grade": "mv submissions\"$1\" workspace",
     "install-req": "pip3 install -r workspace\\requirements.txt",
-    "run": "python workspace\\main.py"
+    "run": "python workspace\\main.py",
+    "grade-sub": "node index.js $1"
   },
   "keywords": [],
   "author": "",

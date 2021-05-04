@@ -134,59 +134,32 @@
         }
 
         async function getMovieList(){
-            const movies = await sendRequest('/api/movies', 'GET');
-            displayMovieList(movies);
+
         }
 
         function displayMovie(movie){
-
+            // Required for comment form to work
             document.querySelector('#movie_id').value = movie.id;
 
-            document.querySelector('#movieTitle').innerHTML = movie.title;
-            
-            document.querySelector('#movieDetail').innerHTML = `
-                <div class="col">
-                    <img src="${movie.poster_url}">
-                </div>
-                <div class="col">
-                    <p> Release Date : ${movie.release_date}</p>
-                    <p> Studio : ${movie.studio} </p>
-                    <p> Gross : ${movie.gross} </p>
-                    <p> Rating : ${movie.rating} </p>
-                </div>
-            `;
-            getMovieComments(movie.id);
+
         }
 
-
         async function getMovie(id){
-            const movie = await sendRequest(`/api/movies/${id}`, 'GET');
-            displayMovie(movie);
+   
         }
 
         async function getMovieComments(movieId){
-            const comments = await sendRequest(`/api/movies/${movieId}/comments`, "GET");
-            displayComments(movieId, comments);
+
         }
         
 
         function displayComments(movieId, comments){
-            let html = '';
-            for(let comment of comments){
-                html+=`<li class="collection-item">
-                        ${comment.username} : ${comment.text}
-                        <a href="#commentList" onclick="deleteComment(${movieId}, ${comment.id})" class="secondary-content"><i class="material-icons">delete</i></a>
-                    </li>`;
-            }
-            document.querySelector('#commentList').innerHTML = html;
+
         }
 
         async function deleteComment(movieId, id){
-            await sendRequest(`/api/comments/${id}`, 'DELETE');
-            getMovieComments(movieId);
-        }
-   
 
+        }
 
     </script>
 </div>
